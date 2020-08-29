@@ -23,7 +23,7 @@ namespace WindowsFormsApp3
         {
             var sb = new StringBuilder();
             var st = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 3; i < 28; i++)
+            for (int i = 0; i < 28; i++)
             {
                 sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}");
             }
@@ -89,32 +89,21 @@ public class Stories
     public static int NumberOfArrangements(int numberOfStories)
     {
         var arrangements = new HashSet<int>();
-        var sb = new StringBuilder();
+        var count = 0;
         for (int i = 0; i < (1 << (numberOfStories-1)); i++)
         {
             //permute each big/small like binary; stop when we hit the top
             var arr = CountSize(numberOfStories, i);
-            if (i> (1 << (numberOfStories-1)) && (arr.Bin >= 0 && !arrangements.Contains(arr.Bin)))
-            {
-                var x = 0;
-            }
-            sb.AppendLine($"{i:000000}\t{arr.Bin:0000}\t{arr.Txt}\t{arr.Bin >= 0}\t{arrangements.Contains(arr.Bin)}");
-            if (arr.Bin == -1) continue;
-            arrangements.Add(arr.Bin );
+            if (arr >= 0) count++;
         }
-        //var sb = new StringBuilder();
-        //foreach(var itm in arrangements)
-        //{
-        //    sb.AppendLine($"{itm:00000}={CountSize(numberOfStories, itm).Txt}");
-        //}
-        return arrangements.Count;
+        return count;
     }
 
-    private static (int Bin, string Txt) CountSize(int numberOfStories, int thisPerm)
+    private static int CountSize(int numberOfStories, int thisPerm)
     {
         var thisSize = 0;
         var thisArr = 0;
-        var sb = new System.Text.StringBuilder(numberOfStories);
+        //var sb = new System.Text.StringBuilder(numberOfStories);
         while (thisSize < numberOfStories)
         {
             var thisBig = thisPerm & 1;
@@ -122,18 +111,18 @@ public class Stories
             thisSize += 1 + thisBig;
             if (thisSize <= numberOfStories)
             {
-                sb.Append("sl"[thisBig]);
+                //sb.Append("sl"[thisBig]);
                 thisArr = (thisArr << 1) | thisBig;
             }
             else
             {
-                sb.Append("SL"[thisBig]);
-                sb.Append($"(={thisSize})");
-                return (-1, sb.ToString());
+                //sb.Append("SL"[thisBig]);
+                //sb.Append($"(={thisSize})");
+                return -1;// (-1, sb.ToString());
             }
         }
-        sb.Append($"(={thisSize})");
-        return (thisArr, sb.ToString());
+        //sb.Append($"(={thisSize})");
+        return thisArr;//, sb.ToString());
     }
 
 
