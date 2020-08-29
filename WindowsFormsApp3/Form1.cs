@@ -23,12 +23,12 @@ namespace WindowsFormsApp3
         {
             var sb = new StringBuilder();
             var st = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < 100; i++)
+            for (int i = 3; i < 20; i++)
             {
                 sb.AppendLine(Stories.NumberOfArrangements(i).ToString());
             }
             st.Stop();
-            MessageBox.Show(st.Elapsed.TotalSeconds.ToString());
+            MessageBox.Show(st.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
 
             Console.WriteLine(Stories.NumberOfArrangements(3));
             MessageBox.Show(Stories.NumberOfArrangements(3).ToString());
@@ -80,7 +80,47 @@ namespace WindowsFormsApp3
 
 public class Stories
 {
+
     public static int NumberOfArrangements(int numberOfStories)
+    {
+        var arrangements = new HashSet<int>();
+        for (int i = 0; i <= (1 << numberOfStories); i++)
+        {
+            //permute each big/small like binary; stop when we hit the top
+            arrangements.Add(CountSize(numberOfStories, i));
+        }
+        //var sb = new StringBuilder();
+        //foreach(var itm in arrangements)
+        //{
+        //    sb.AppendLine($"{itm:00000}={CountSize(numberOfStories, itm).Txt}");
+        //}
+        return arrangements.Count;
+    }
+
+    private static int CountSize(int numberOfStories, int thisPerm)
+    {
+        var thisSize = 0;
+        var thisArr = 0;
+        //var sb = new System.Text.StringBuilder(numberOfStories);
+        while (thisSize < numberOfStories)
+        {
+            var thisBig = thisPerm & 1;
+            thisPerm = thisPerm >> 1;
+            thisSize += 1 + thisBig;
+            if (thisSize <= numberOfStories)
+            {
+                //sb.Append("sl"[thisBig]);
+                thisArr = (thisArr << 1) | thisBig;
+            }
+        }
+        return thisArr;//, sb.ToString());
+    }
+
+
+    //skip the last floor (either the 2nd last is small, and so s the last; or the 2nd last is big; and there is no more)
+
+
+    public static int NumberOfArrangements2(int numberOfStories)
     {
         //3 stories: sss,sl,ls
         //4 stories: ssss, ssl, sls, lss, ll
@@ -96,24 +136,12 @@ public class Stories
             for (int i = 0; i < (1 << (nSlots)); i++)
             {
                 var OnBits = Enumerable.Range(0, nSlots).Count(x => (i & (1 << x)) != 0);//find how many bits in the binary of i are true
-                //var OnBits = bitCount(i);
                 if (OnBits == nBigs) count++;
             }
         }
         return count;
 
     }
-    //static int bitCount(int n)
-    //{
-    //    int count = 0;
-    //    while (n > 0)
-    //    {
-    //        count += (n & 1);
-    //        n >>= 1;
-    //    }
-    //    return count;
-    //}
-
 
 
     //public static int NumberOfArrangements(int numberOfStories)
