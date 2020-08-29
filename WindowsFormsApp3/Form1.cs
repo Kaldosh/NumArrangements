@@ -23,7 +23,7 @@ namespace WindowsFormsApp3
         {
             var sb = new StringBuilder();
             var stTotal = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < 28; i++)
+            for (int i = 0; i < 25; i++)
             {
                 var st = System.Diagnostics.Stopwatch.StartNew();
                 sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}\t{st.Elapsed.TotalSeconds:000.000}");
@@ -82,7 +82,7 @@ namespace WindowsFormsApp3
 public class Stories
 {
 
-    public static int NumberOfArrangements(int numberOfStories)
+    public static int NumberOfArrangements4(int numberOfStories)
     {
         //it's just fibonacci
         if (numberOfStories < 1) return 1;
@@ -141,7 +141,7 @@ public class Stories
     //skip the last floor (either the 2nd last is small, and so s the last; or the 2nd last is big; and there is no more)
 
 
-    public static int NumberOfArrangements2(int numberOfStories)
+    public static int NumberOfArrangements(int numberOfStories)
     {
         //3 stories: sss,sl,ls
         //4 stories: ssss, ssl, sls, lss, ll
