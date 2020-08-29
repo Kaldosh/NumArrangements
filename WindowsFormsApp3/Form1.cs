@@ -82,12 +82,24 @@ namespace WindowsFormsApp3
 public class Stories
 {
 
+    public static int NumberOfArrangements(int numberOfStories)
+    {
+        //it's just fibonacci
+        if (numberOfStories < 1) return 1;
+        switch (numberOfStories)
+        {
+            case 1: return 1; //s
+            case 2: return 2; //ss, or l
+            default: return NumberOfArrangements(numberOfStories - 1) + (NumberOfArrangements(numberOfStories - 2));
+        }
+    }
+
     //public static int NumberOfArrangements4(int numberOfStories)
     //{
     //    //track the positions of the big ones; then cancel duplicates?
     //}
 
-    public static int NumberOfArrangements(int numberOfStories)
+    public static int NumberOfArrangements3(int numberOfStories)
     {
         var arrangements = new HashSet<int>();
         for (int i = 0; i < (1 << (numberOfStories-1)); i++)
