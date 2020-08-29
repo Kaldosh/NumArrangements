@@ -22,13 +22,14 @@ namespace WindowsFormsApp3
         private void Form1_Load(object sender, EventArgs e)
         {
             var sb = new StringBuilder();
-            var st = System.Diagnostics.Stopwatch.StartNew();
+            var stTotal = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < 28; i++)
             {
-                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}");
+                var st = System.Diagnostics.Stopwatch.StartNew();
+                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}\t{st.Elapsed.TotalSeconds:000.000}");
             }
-            st.Stop();
-            MessageBox.Show(st.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
+            stTotal.Stop();
+            MessageBox.Show(stTotal.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
 
             Console.WriteLine(Stories.NumberOfArrangements(3));
             MessageBox.Show(Stories.NumberOfArrangements(3).ToString());
@@ -89,14 +90,13 @@ public class Stories
     public static int NumberOfArrangements(int numberOfStories)
     {
         var arrangements = new HashSet<int>();
-        var count = 0;
         for (int i = 0; i < (1 << (numberOfStories-1)); i++)
         {
             //permute each big/small like binary; stop when we hit the top
             var arr = CountSize(numberOfStories, i);
-            if (arr >= 0) count++;
+            if (arr >= 0) arrangements.Add(arr);
         }
-        return count;
+        return arrangements.Count;
     }
 
     private static int CountSize(int numberOfStories, int thisPerm)
@@ -183,3 +183,44 @@ public class Stories
         Console.WriteLine(NumberOfArrangements(3));
     }
 }
+
+
+
+
+
+/*
+ * public abstract class DocumentCounter
+{
+    private int count = 0;
+    private int increment;
+    
+    public DocumentCounter(int increment)
+    {
+        this.increment = increment;
+    }
+
+    protected int GetAndIncrement()
+    {
+        this.count += this.increment;
+        return this.count;
+    }
+    
+    public abstract string GetNewDocumentName();
+}
+
+public class DocumentNameCreator : DocumentCounter
+{
+    private string prefix;
+    
+    public DocumentNameCreator(int increment, string prefix) : base(increment)
+    {
+        this.prefix = prefix;
+    }
+
+    public override string GetNewDocumentName()
+    {
+        return prefix + GetAndIncrement();
+    }
+}
+
+    */
