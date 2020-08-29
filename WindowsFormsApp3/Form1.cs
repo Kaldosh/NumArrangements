@@ -89,15 +89,17 @@ public class Stories
     public static int NumberOfArrangements(int numberOfStories)
     {
         var arrangements = new HashSet<int>();
-        for (int i = 0; i < (1 << numberOfStories); i++)
+        var sb = new StringBuilder();
+        for (int i = 0; i < (1 << (numberOfStories-1)); i++)
         {
             //permute each big/small like binary; stop when we hit the top
             var arr = CountSize(numberOfStories, i);
-            if (arr.Bin == -1) continue;
-            if (arrangements.Contains(arr.Bin))
+            if (i> (1 << (numberOfStories-1)) && (arr.Bin >= 0 && !arrangements.Contains(arr.Bin)))
             {
                 var x = 0;
             }
+            sb.AppendLine($"{i:000000}\t{arr.Bin:0000}\t{arr.Txt}\t{arr.Bin >= 0}\t{arrangements.Contains(arr.Bin)}");
+            if (arr.Bin == -1) continue;
             arrangements.Add(arr.Bin );
         }
         //var sb = new StringBuilder();
@@ -125,9 +127,12 @@ public class Stories
             }
             else
             {
+                sb.Append("SL"[thisBig]);
+                sb.Append($"(={thisSize})");
                 return (-1, sb.ToString());
             }
         }
+        sb.Append($"(={thisSize})");
         return (thisArr, sb.ToString());
     }
 
