@@ -81,13 +81,24 @@ namespace WindowsFormsApp3
 public class Stories
 {
 
+    //public static int NumberOfArrangements4(int numberOfStories)
+    //{
+    //    //track the positions of the big ones; then cancel duplicates?
+    //}
+
     public static int NumberOfArrangements(int numberOfStories)
     {
         var arrangements = new HashSet<int>();
-        for (int i = 0; i <= (1 << numberOfStories); i++)
+        for (int i = 0; i < (1 << numberOfStories); i++)
         {
             //permute each big/small like binary; stop when we hit the top
-            arrangements.Add(CountSize(numberOfStories, i));
+            var arr = CountSize(numberOfStories, i);
+            if (arr.Bin == -1) continue;
+            if (arrangements.Contains(arr.Bin))
+            {
+                var x = 0;
+            }
+            arrangements.Add(arr.Bin );
         }
         //var sb = new StringBuilder();
         //foreach(var itm in arrangements)
@@ -97,11 +108,11 @@ public class Stories
         return arrangements.Count;
     }
 
-    private static int CountSize(int numberOfStories, int thisPerm)
+    private static (int Bin, string Txt) CountSize(int numberOfStories, int thisPerm)
     {
         var thisSize = 0;
         var thisArr = 0;
-        //var sb = new System.Text.StringBuilder(numberOfStories);
+        var sb = new System.Text.StringBuilder(numberOfStories);
         while (thisSize < numberOfStories)
         {
             var thisBig = thisPerm & 1;
@@ -109,11 +120,15 @@ public class Stories
             thisSize += 1 + thisBig;
             if (thisSize <= numberOfStories)
             {
-                //sb.Append("sl"[thisBig]);
+                sb.Append("sl"[thisBig]);
                 thisArr = (thisArr << 1) | thisBig;
             }
+            else
+            {
+                return (-1, sb.ToString());
+            }
         }
-        return thisArr;//, sb.ToString());
+        return (thisArr, sb.ToString());
     }
 
 
