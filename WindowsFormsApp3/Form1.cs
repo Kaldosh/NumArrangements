@@ -23,9 +23,9 @@ namespace WindowsFormsApp3
         {
             var sb = new StringBuilder();
             var st = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 3; i < 20; i++)
+            for (int i = 3; i < 28; i++)
             {
-                sb.AppendLine(Stories.NumberOfArrangements(i).ToString());
+                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}");
             }
             st.Stop();
             MessageBox.Show(st.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
