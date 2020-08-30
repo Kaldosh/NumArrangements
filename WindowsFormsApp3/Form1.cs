@@ -26,7 +26,7 @@ namespace WindowsFormsApp3
             for (int i = 1; i < 46; i++) //46 has result > int32.maxvalue; so is invalid to test for expected result
             {
                 var st = System.Diagnostics.Stopwatch.StartNew();
-                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}\t{st.Elapsed.TotalSeconds:000.000}");
+                sb.AppendLine($"{i}={Stories.NumberOfArrangements4(i)}\t{st.Elapsed.TotalSeconds:000.000}");
             }
             stTotal.Stop();
             MessageBox.Show(stTotal.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
