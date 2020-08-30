@@ -23,14 +23,14 @@ namespace WindowsFormsApp3
         {
             var sb = new StringBuilder();
             var stTotal = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 1; i < 40; i++)
+            for (int i = 1; i < 46; i++) //46 has result > int32.maxvalue; so is invalid to test for expected result
             {
                 var st = System.Diagnostics.Stopwatch.StartNew();
-                sb.AppendLine($"{i}={Stories.FastFib(i)}\t{st.Elapsed.TotalSeconds:000.000}");
+                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}\t{st.Elapsed.TotalSeconds:000.000}");
             }
             stTotal.Stop();
             MessageBox.Show(stTotal.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
-
+            
             Console.WriteLine(Stories.NumberOfArrangements(3));
             MessageBox.Show(Stories.NumberOfArrangements(3).ToString());
             MessageBox.Show(Stories.NumberOfArrangements(4).ToString());
@@ -82,10 +82,61 @@ namespace WindowsFormsApp3
 public class Stories
 {
 
-    
+    public static long NumberOfArrangements(int numberOfStories)
+    {
 
-    static Dictionary<int, long> PrecalcFib = new Dictionary<int, long>() { { 1, 1 }, { 2, 1 } };
-    public static long FastFib(int index)
+        if (numberOfStories <= 0 || numberOfStories > 63) throw new ArgumentOutOfRangeException(nameof(numberOfStories));
+        if (numberOfStories == 1) return 1;
+        //"1" bit in position n means whether the nth story has a cieling (separating from the story above)
+        //top always has a roof; therefore n stories is n-1 bits.
+        //consecutive 0's is invalid, because too tall (neither has a roof)
+        //if we hit an invalid number, the next number worth checking for is by flipping the most significant duplicate (the 1st 0 isnt' a duplicate) i.e. 00000->01000 because anything starting with 00 is invalid; otherwise increment... 01000->01010->01011->01100 is invalid, etc
+        //so we should be skipping large chunks when high significance numbers are double 0
+        long roofs = 0;
+        long MaxMask = (1L << (numberOfStories - 1)) - 1L;//ignore the top; it always has a roof
+        long FoundArrangements = 0;
+        //var sb = new StringBuilder();
+        while (roofs <= MaxMask)
+        {
+            //find the most-significant double-0 within the region of interest
+            //avoid IF's due to branch prediction slowdowns or needing inner loops; use bitwise logic
+            //shifting the not over itself, anded together will show 1's wherever they were both 0's.
+            //shifting that 1, then 2 , then 4, etc will fill the rest for any lsb's
+            //xoring the mini mask with itself shifted gives just the msb; and also gives the bits we need to zero out to reset for continuing cointing.
+            var dupes = (~roofs) & MaxMask;//keep only the bits we care about; flipped
+            var skipMask = dupes & (dupes >> 1);
+            if (skipMask == 0)
+            {
+                //the IF is a branch misprediction, but it's in semi-predicatable blocks so should run reasonably fast
+                FoundArrangements++; //no duplicates - all are either 1 or 2
+                //var floors = Convert.ToString(roofs, 2);
+                //sb.Append(roofs);
+                //sb.Append("<");
+                //sb.Append('-', numberOfStories - floors.Length -1);
+                //sb.Append(floors.Replace('0', '-').Replace('1', '|'));
+                //sb.AppendLine("!");
+                roofs++;
+                continue;
+            }
+            skipMask |= skipMask >> 1;
+            skipMask |= skipMask >> 2;
+            skipMask |= skipMask >> 4;
+            skipMask |= skipMask >> 8;
+            skipMask |= skipMask >> 16;
+            skipMask |= skipMask >> 32;
+            var mostSigDupe = skipMask ^ (skipMask >> 1);
+            var nextRoof = (roofs | mostSigDupe) & (~(skipMask >> 1));
+            //if (roofs <= MaxMask && nextRoof <= roofs) throw new ApplicationException("Invalid logic");
+            roofs = nextRoof;
+        }
+
+        return FoundArrangements;
+
+    }
+
+
+    static Dictionary<int, long> PrecalcFib = new Dictionary<int, long>() { { 1, 1 }, { 2, 2 } };
+    public static long NumberOfArrangements5(int index)
     {
         if (index < 1) throw new ArgumentNullException(nameof(index));
         if (PrecalcFib.TryGetValue(index, out var value))
@@ -94,7 +145,7 @@ public class Stories
         }
         else
         {
-            var newval = (FastFib(index - 1) + FastFib(index - 2));
+            var newval = (NumberOfArrangements5(index - 1) + NumberOfArrangements5(index - 2));
             PrecalcFib[index] = newval;
             return newval;
         }
@@ -102,7 +153,8 @@ public class Stories
 
 
 
-    public static int NumberOfArrangements(int numberOfStories)
+
+    public static int NumberOfArrangements4(int numberOfStories)
     {
         //it's just fibonacci
         if (numberOfStories < 1) return 1;
@@ -110,7 +162,7 @@ public class Stories
         {
             case 1: return 1; //s
             case 2: return 2; //ss, or l
-            default: return NumberOfArrangements(numberOfStories - 1) + (NumberOfArrangements(numberOfStories - 2));
+            default: return NumberOfArrangements4(numberOfStories - 1) + (NumberOfArrangements4(numberOfStories - 2));
         }
     }
 
