@@ -26,10 +26,12 @@ namespace WindowsFormsApp3
             for (int i = 1; i < 46; i++) //46 has result > int32.maxvalue; so is invalid to test for expected result
             {
                 var st = System.Diagnostics.Stopwatch.StartNew();
-                sb.AppendLine($"{i}={Stories.NumberOfArrangements4(i)}\t{st.Elapsed.TotalSeconds:000.000}");
+                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}\t{st.Elapsed.TotalSeconds:000.000}");
             }
             stTotal.Stop();
-            MessageBox.Show(stTotal.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
+            var msg = stTotal.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString();
+            Clipboard.SetText(msg);
+            MessageBox.Show(msg);
             
             Console.WriteLine(Stories.NumberOfArrangements(3));
             MessageBox.Show(Stories.NumberOfArrangements(3).ToString());
@@ -82,11 +84,12 @@ namespace WindowsFormsApp3
 public class Stories
 {
 
-    public static long NumberOfArrangements(int numberOfStories)
+    public static int NumberOfArrangements(int numberOfStories)
     {
 
-        if (numberOfStories <= 0 || numberOfStories > 63) throw new ArgumentOutOfRangeException(nameof(numberOfStories));
+        if (numberOfStories <= 0 || numberOfStories > 45) throw new ArgumentOutOfRangeException(nameof(numberOfStories));
         if (numberOfStories == 1) return 1;
+
         //"1" bit in position n means whether the nth story has a cieling (separating from the story above)
         //top always has a roof; therefore n stories is n-1 bits.
         //consecutive 0's is invalid, because too tall (neither has a roof)
@@ -94,7 +97,7 @@ public class Stories
         //so we should be skipping large chunks when high significance numbers are double 0
         long roofs = 0;
         long MaxMask = (1L << (numberOfStories - 1)) - 1L;//ignore the top; it always has a roof
-        long FoundArrangements = 0;
+        int FoundArrangements = 0;
         //var sb = new StringBuilder();
         while (roofs <= MaxMask)
         {
