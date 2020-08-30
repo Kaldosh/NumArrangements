@@ -23,10 +23,10 @@ namespace WindowsFormsApp3
         {
             var sb = new StringBuilder();
             var stTotal = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < 25; i++)
+            for (int i = 1; i < 40; i++)
             {
                 var st = System.Diagnostics.Stopwatch.StartNew();
-                sb.AppendLine($"{i}={Stories.NumberOfArrangements(i)}\t{st.Elapsed.TotalSeconds:000.000}");
+                sb.AppendLine($"{i}={Stories.FastFib(i)}\t{st.Elapsed.TotalSeconds:000.000}");
             }
             stTotal.Stop();
             MessageBox.Show(stTotal.Elapsed.TotalSeconds.ToString() + "\r\n" + sb.ToString());
@@ -82,7 +82,27 @@ namespace WindowsFormsApp3
 public class Stories
 {
 
-    public static int NumberOfArrangements4(int numberOfStories)
+    
+
+    static Dictionary<int, long> PrecalcFib = new Dictionary<int, long>() { { 1, 1 }, { 2, 1 } };
+    public static long FastFib(int index)
+    {
+        if (index < 1) throw new ArgumentNullException(nameof(index));
+        if (PrecalcFib.TryGetValue(index, out var value))
+        {
+            return value;
+        }
+        else
+        {
+            var newval = (FastFib(index - 1) + FastFib(index - 2));
+            PrecalcFib[index] = newval;
+            return newval;
+        }
+    }
+
+
+
+    public static int NumberOfArrangements(int numberOfStories)
     {
         //it's just fibonacci
         if (numberOfStories < 1) return 1;
@@ -102,7 +122,7 @@ public class Stories
     public static int NumberOfArrangements3(int numberOfStories)
     {
         var arrangements = new HashSet<int>();
-        for (int i = 0; i < (1 << (numberOfStories-1)); i++)
+        for (int i = 0; i < (1 << (numberOfStories - 1)); i++)
         {
             //permute each big/small like binary; stop when we hit the top
             var arr = CountSize(numberOfStories, i);
@@ -141,7 +161,7 @@ public class Stories
     //skip the last floor (either the 2nd last is small, and so s the last; or the 2nd last is big; and there is no more)
 
 
-    public static int NumberOfArrangements(int numberOfStories)
+    public static int NumberOfArrangements2(int numberOfStories)
     {
         //3 stories: sss,sl,ls
         //4 stories: ssss, ssl, sls, lss, ll
